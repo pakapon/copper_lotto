@@ -31,8 +31,7 @@ if (!empty($jwt)) {
                     FROM 
                         `" . $table_aut . "` a
                     JOIN
-                        `" . $table_us . "` b ON a.user_code = b.user_code
-                    LEFT JOIN `".$table_po."` c on a.user_code = c.point_usercode
+                        `" . $table_us . "` b ON a.user_code = b.user_code 
                     WHERE token = ? ";
                     
         $p_stmt = $conn->prepare($p_query);
@@ -41,12 +40,9 @@ if (!empty($jwt)) {
         $num = $p_stmt->rowCount();
         $row = $p_stmt->fetch(PDO::FETCH_ASSOC);
         $role_name      = $row["user_type"];
-        $world_email    = $row["user_email"];
+        $world_status   = $row["user_status"];
         $world_code     = $row["user_code"];
         $world_phone    = $row["user_tel"];
-        $world_scanner  = $row["scanner"];
-        $world_line     = $row["user_lineid"];
-        $world_point    = $row['POINT'];
 
         if ($num === 0) {
             http_response_code(401);
