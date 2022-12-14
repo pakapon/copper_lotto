@@ -10,8 +10,11 @@ $data = json_decode(file_get_contents("php://input"));
 
 if ($role_name != 2) {
     $query = "SELECT * FROM " . $table_loto . " WHERE user_code = '" . $world_code . "' ";
-} else {
-    $query = "SELECT *,COUNT(lotto_book) AS booknum  FROM " . $table_loto . " GROUP BY lotto_book,lotto_lot ";
+} elseif ($role_name == 2) {
+    $query = "SELECT *
+                    ,COUNT(lotto_book) AS booknum
+                    ,(SELECT COUNT(1) FROM " . $table_loto . " ) AS all_book
+                  FROM " . $table_loto . " GROUP BY lotto_book,lotto_lot ";
 }
 
 $stmt = $conn->prepare($query);
@@ -22,6 +25,7 @@ $stmt->execute() or die(json_encode(
     ),
     http_response_code(400)
 ));
+
 
 $num = $stmt->rowCount();
 
@@ -75,8 +79,16 @@ if ($num > 0) {
                 "update_at"         => $row['update_at'],
                 "user_array"        => $user_r
             );
+            
+            $allbook    = $row['all_book'];
         }
- 
+
+        $query_book = " SELECT COUNT(1)AS all_setbook FROM (SELECT COUNT(lotto_book) AS all_setbook FROM " . $table_loto . " GROUP BY lotto_book ) as a; ";
+        $stmt_book = $conn->prepare($query_book);
+        $stmt_book->execute();
+        while ($row_book = $stmt_book->fetch(PDO::FETCH_ASSOC)) {
+            $allsetbook = $row_book['all_setbook'];
+        }
     }
 } else {
     http_response_code(404);
@@ -84,6 +96,8 @@ if ($num > 0) {
 }
 $jsonlist = array(
     "data" => $data,
+    "all_book" => $allbook,
+    "all_setbook" => $allsetbook,
 );
 
 echo json_encode($jsonlist);
