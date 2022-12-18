@@ -50,9 +50,11 @@ if ($num > 0) {
                                     b.user_name,
                                     b.user_address,
                                     b.user_address_id,
-                                    b.user_tel
+                                    b.user_tel,
+                                    c.*
                             FROM " . $table_loto . " a 
                         LEFT JOIN " . $table_us . " b ON a.user_code = b.user_code
+                        LEFT JOIN " . $table_add . " c ON b.user_address_id = c.p_id 
                         WHERE lotto_book = :book 
                         GROUP BY a.user_code ";
 
@@ -66,6 +68,10 @@ if ($num > 0) {
                     "user_name"         => $row_u['user_name'],
                     "user_address"      => $row_u['user_address'],
                     "user_address_id"   => $row_u['user_address_id'],
+                    "postcode"          => $row_u['postcode'],
+                    "tumbon"            => $row_u['tumbon'],
+                    "aumper"            => $row_u['aumper'],
+                    "province"          => $row_u['province'],
                     "user_tel"          => $row_u['user_tel'],
                 );
             }
@@ -79,7 +85,7 @@ if ($num > 0) {
                 "update_at"         => $row['update_at'],
                 "user_array"        => $user_r
             );
-            
+
             $allbook    = $row['all_book'];
         }
 
