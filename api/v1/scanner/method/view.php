@@ -8,6 +8,8 @@ $conn = $databaseService->getConnection();
 
 $data = json_decode(file_get_contents("php://input"));
 
+$mat = $_GET['mat'];
+
 if ($role_name != 2) {
     $query = "SELECT * FROM " . $table_loto . " WHERE user_code = '" . $world_code . "' ";
 } elseif ($role_name == 2) {
@@ -15,6 +17,14 @@ if ($role_name != 2) {
                     ,COUNT(lotto_book) AS booknum
                     ,(SELECT COUNT(1) FROM " . $table_loto . " ) AS all_book
                   FROM " . $table_loto . " GROUP BY lotto_book,lotto_lot ";
+} elseif ($mat == 1) {
+    $query = "SELECT *
+                    ,COUNT(lotto_book) AS booknum
+                    ,(SELECT COUNT(1) FROM " . $table_loto . " ) AS all_book
+                  FROM " . $table_loto . "
+                  WHERE user_code = '" . $world_code . "'
+                  GROUP BY lotto_book,lotto_lot 
+                  HAVING booknum > 1";
 }
 
 $stmt = $conn->prepare($query);
